@@ -1,0 +1,63 @@
+.order-tracking {
+  position: relative;
+}
+
+.tracking-step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.tracking-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 40px;
+  width: 2px;
+  height: 30px;
+  background-color: #dee2e6;
+}
+
+.tracking-step.completed::after {
+  background-color: #28a745;
+}
+
+.tracking-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  z-index: 1;
+  position: relative;
+}
+
+.tracking-step.active .tracking-icon {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.tracking-step.completed .tracking-icon {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.tracking-content h6 {
+  margin-bottom: 5px;
+}
+
+.tracking-step.active .tracking-content h6 {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.tracking-step.completed .tracking-content h6 {
+  color: #28a745;
+}

@@ -1,0 +1,138 @@
+<div class="row">
+  <div class="col-md-8">
+    <h2><i class="fas fa-credit-card me-2"></i>Checkout</h2>
+    
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Customer Information</h5>
+      </div>
+      <div class="card-body">
+        <form #checkoutForm="ngForm" (ngSubmit)="placeOrder()" *ngIf="!orderPlaced">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="customerName" class="form-label">Full Name *</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="customerName"
+                name="customerName"
+                [(ngModel)]="customerDetails.customerName" 
+                required
+                #customerName="ngModel">
+              <div class="invalid-feedback" *ngIf="customerName.invalid && customerName.touched">
+                Please provide your full name.
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="customerPhone" class="form-label">Phone Number *</label>
+              <input 
+                type="tel" 
+                class="form-control" 
+                id="customerPhone"
+                name="customerPhone"
+                [(ngModel)]="customerDetails.customerPhone" 
+                required
+                #customerPhone="ngModel">
+              <div class="invalid-feedback" *ngIf="customerPhone.invalid && customerPhone.touched">
+                Please provide your phone number.
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="customerAddress" class="form-label">Delivery Address *</label>
+            <textarea 
+              class="form-control" 
+              id="customerAddress"
+              name="customerAddress"
+              rows="3"
+              [(ngModel)]="customerDetails.customerAddress" 
+              required
+              #customerAddress="ngModel"
+              placeholder="Enter your complete delivery address..."></textarea>
+            <div class="invalid-feedback" *ngIf="customerAddress.invalid && customerAddress.touched">
+              Please provide your delivery address.
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+              <i class="fas fa-arrow-left me-2"></i>Back to Cart
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-success" 
+              [disabled]="checkoutForm.invalid || placing">
+              <span *ngIf="placing" class="spinner-border spinner-border-sm me-2"></span>
+              <i class="fas fa-check me-2" *ngIf="!placing"></i>
+              {{ placing ? 'Placing Order...' : 'Place Order' }}
+            </button>
+          </div>
+        </form>
+
+        <div *ngIf="orderPlaced" class="text-center py-4">
+          <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+          <h3 class="mt-3 text-success">Order Placed Successfully!</h3>
+          <p class="text-muted">Your order #{{ placedOrder?.id }} has been confirmed.</p>
+          <p class="text-muted">Estimated delivery: {{ getFormattedDate(placedOrder?.estimatedDelivery) }}</p>
+          <div class="mt-4">
+            <button class="btn btn-primary me-2" (click)="viewOrder()">
+              <i class="fas fa-receipt me-2"></i>View Order Details
+            </button>
+            <button class="btn btn-outline-primary" (click)="continueShopping()">
+              <i class="fas fa-store me-2"></i>Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Order Summary</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="cartItems.length === 0" class="text-center text-muted">
+          <i class="fas fa-shopping-cart mb-2" style="font-size: 2rem;"></i>
+          <p>Your cart is empty</p>
+        </div>
+        
+        <div *ngIf="cartItems.length > 0">
+          <div class="d-flex justify-content-between mb-2" *ngFor="let item of cartItems">
+            <span>{{ item.groceryItem.name }} ({{ item.quantity }}x)</span>
+            <span>${{ item.totalPrice.toFixed(2) }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>${{ cartTotal.toFixed(2) }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Delivery Fee:</span>
+            <span>$2.99</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <strong>Total:</strong>
+            <strong class="text-success">${{ (cartTotal + 2.99).toFixed(2) }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-body">
+        <h6><i class="fas fa-truck me-2"></i>Delivery Information</h6>
+        <p class="small text-muted mb-1">
+          <i class="fas fa-clock me-1"></i>
+          Estimated delivery: 1-2 hours
+        </p>
+        <p class="small text-muted mb-0">
+          <i class="fas fa-shield-alt me-1"></i>
+          Safe and contactless delivery
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
