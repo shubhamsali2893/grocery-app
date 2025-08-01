@@ -11,7 +11,7 @@
   --accent: #00d4ff;        /* Cyan */
   --success: #0ba360;       /* Emerald Green */
   --success-light: #e6f9f1;
-  --grocery-green: #8bc34a;  /* Light Green for Grocery Text */
+  --grocery-green: #5311a5;  /* Deep Purple for Grocery Text */
   --warning: #ff9a44;       /* Warm Orange */
   --warning-light: #fff5eb;
   --danger: #ff416c;        /* Vibrant Pink/Red */
@@ -434,7 +434,21 @@ body {
 }
 
 .text-grocery-green {
-  color: var(--grocery-green) !important;
+  background: linear-gradient(90deg, var(--primary), var(--grocery-green), var(--secondary), var(--primary));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-text 8s ease infinite;
+  text-shadow: 0 0 15px rgba(106, 17, 203, 0.15);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+@keyframes gradient-text {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Badge styling */
