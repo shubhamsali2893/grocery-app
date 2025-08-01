@@ -66,6 +66,12 @@ export class CheckoutComponent implements OnInit {
         this.placedOrder = order;
         this.orderPlaced = true;
         this.placing = false;
+        
+        // Force reload cart items to ensure cart count is reset
+        this.cartService.loadCartItems();
+        
+        // Clear local cart items array
+        this.cartItems = [];
       },
       error: (error) => {
         console.error('Error placing order:', error);

@@ -15,7 +15,8 @@ export class CartService {
   public cartItems$ = this.cartItemsSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.loadCartItems();
+    // Don't load cart items in constructor to avoid initial API call
+    // that might cause issues before components are ready
   }
 
 
@@ -25,8 +26,15 @@ export class CartService {
   }
 
   loadCartItems(): void {
-    this.getCartItems().subscribe(items => {
-      this.cartItemsSubject.next(items);
+    this.getCartItems().subscribe({
+      next: (items) => {
+        this.cartItemsSubject.next(items);
+      },
+      error: (error) => {
+        console.error('Error loading cart items:', error);
+        // If there's an error, ensure we set an empty cart
+        this.cartItemsSubject.next([]);
+      }
     });
   }
 

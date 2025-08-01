@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroceryService } from '../../services/grocery.service';
 import { CartService } from '../../services/cart.service';
+import { RefreshService } from '../../services/refresh.service';
 import { GroceryItem } from '../../models/grocery-item.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -11,7 +13,7 @@ import { GroceryItem } from '../../models/grocery-item.model';
   imports: [CommonModule, FormsModule],
   templateUrl: './product-list.component.html'
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   items: GroceryItem[] = [];
   filteredItems: GroceryItem[] = [];
   categories: string[] = [];
@@ -19,14 +21,34 @@ export class ProductListComponent implements OnInit {
   searchTerm = '';
   loading = true;
   quantities: { [key: number]: number } = {};
+  private refreshSubscription: Subscription;
 
   constructor(
     private groceryService: GroceryService,
-    private cartService: CartService
-  ) {}
+    private cartService: CartService,
+    private refreshService: RefreshService
+  ) {
+    // Initialize the subscription
+    this.refreshSubscription = new Subscription();
+  }
 
   ngOnInit() {
     this.loadProducts();
+    
+    // Subscribe to refresh events
+    this.refreshSubscription = this.refreshService.refresh$.subscribe(source => {
+      if (source === 'order-placed') {
+        console.log('Order placed, refreshing product list to update stock counts');
+        this.loadProducts();
+      }
+    });
+  }
+  
+  ngOnDestroy() {
+    // Clean up subscription when component is destroyed
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   loadProducts() {
@@ -104,5 +126,11 @@ export class ProductListComponent implements OnInit {
         console.error('Error adding to cart:', error);
       }
     });
+  }
+
+  resetFilters() {
+    this.searchTerm = '';
+    this.selectedCategory = 'all';
+    this.filteredItems = this.items;
   }
 }

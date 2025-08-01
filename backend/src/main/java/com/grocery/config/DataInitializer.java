@@ -88,7 +88,7 @@ public class DataInitializer implements CommandLineRunner {
             "Fresh roma tomatoes, perfect for cooking", 
             2.49, 
             45, 
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.lovefoodhatewaste.com%2Ffoods-and-recipes%2Ftomatoes&psig=AOvVaw3kUEJlByGZbV6J7dIEuRxT&ust=1754067474925000&source=images&cd=vfe&opi=89978449&ved=0CBYQjRxqFwoTCJDVltnI544DFQAAAAAdAAAAABAE", 
+            "https://images.unsplash.com/photo-1518977822534-7049a61ee0c2?w=300&h=300&fit=crop", 
             "Vegetables"
         ));
 
@@ -108,6 +108,52 @@ public class DataInitializer implements CommandLineRunner {
             22, 
             "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=300&h=300&fit=crop", 
             "Beverages"
+        ));
+
+        // Adding 5 more grocery items
+        groceryItemRepository.save(new GroceryItem(
+            "Fresh Carrots", 
+            "Organic baby carrots, sweet and crunchy", 
+            1.99, 
+            60, 
+            "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=300&h=300&fit=crop", 
+            "Vegetables"
+        ));
+
+        groceryItemRepository.save(new GroceryItem(
+            "Salmon Fillet", 
+            "Fresh Atlantic salmon fillet, per lb", 
+            12.99, 
+            8, 
+            "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=300&h=300&fit=crop", 
+            "Seafood"
+        ));
+
+        groceryItemRepository.save(new GroceryItem(
+            "Avocados", 
+            "Ripe Hass avocados, perfect for guacamole", 
+            3.99, 
+            25, 
+            "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop", 
+            "Fruits"
+        ));
+
+        groceryItemRepository.save(new GroceryItem(
+            "Pasta", 
+            "Italian spaghetti pasta, 1 lb box", 
+            1.79, 
+            50, 
+            "https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?w=300&h=300&fit=crop", 
+            "Pantry"
+        ));
+
+        groceryItemRepository.save(new GroceryItem(
+            "Bell Peppers", 
+            "Colorful bell peppers mix - red, yellow, green", 
+            4.99, 
+            30, 
+            "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=300&h=300&fit=crop", 
+            "Vegetables"
         ));
     }
 }

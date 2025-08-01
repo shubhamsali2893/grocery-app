@@ -1,6 +1,7 @@
 package com.grocery.service;
 
 import com.grocery.model.*;
+import com.grocery.repository.GroceryItemRepository;
 import com.grocery.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class OrderService {
 
     @Autowired
     private CartService cartService;
+    
+    @Autowired
+    private GroceryItemRepository groceryItemRepository;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAllByOrderByOrderDateDesc();
@@ -39,21 +43,38 @@ public class OrderService {
         if (cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
         }
+        
+        // Check if all items have sufficient stock
+        for (CartItem cartItem : cartItems) {
+            GroceryItem item = cartItem.getGroceryItem();
+            if (item.getAvailableQuantity() < cartItem.getQuantity()) {
+                throw new RuntimeException("Not enough stock for item: " + item.getName());
+            }
+        }
 
         Double totalAmount = cartService.getCartTotal();
         
         Order order = new Order(totalAmount, customerName, customerAddress, customerPhone);
         order = orderRepository.save(order);
 
-        // Create order items from cart items
+        // Create order items from cart items and update stock
         final Order finalOrder = order;
         List<OrderItem> orderItems = cartItems.stream()
-                .map(cartItem -> new OrderItem(
+                .map(cartItem -> {
+                    // Decrease available quantity
+                    GroceryItem item = cartItem.getGroceryItem();
+                    int newQuantity = item.getAvailableQuantity() - cartItem.getQuantity();
+                    item.setAvailableQuantity(newQuantity);
+                    groceryItemRepository.save(item);
+                    
+                    // Create order item
+                    return new OrderItem(
                         finalOrder,
-                        cartItem.getGroceryItem(),
+                        item,
                         cartItem.getQuantity(),
-                        cartItem.getGroceryItem().getPrice()
-                ))
+                        item.getPrice()
+                    );
+                })
                 .collect(Collectors.toList());
 
         order.setOrderItems(orderItems);

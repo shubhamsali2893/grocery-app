@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Order, CustomerDetails } from '../models/order.model';
 import { environment } from '../../environments/environment';
+import { RefreshService } from './refresh.service';
+import { CartService } from './cart.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,11 @@ import { environment } from '../../environments/environment';
 export class OrderService {
   private apiUrl = `${environment.apiUrl}/orders`;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient, 
+    private refreshService: RefreshService,
+    private cartService: CartService
+  ) { }
 
   getAllOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(this.apiUrl);
@@ -25,7 +31,16 @@ export class OrderService {
   }
 
   placeOrder(customerDetails: CustomerDetails): Observable<Order> {
-    return this.http.post<Order>(`${this.apiUrl}/place`, customerDetails);
+    return this.http.post<Order>(`${this.apiUrl}/place`, customerDetails)
+      .pipe(
+        tap(() => {
+          // Notify components to refresh their data when an order is placed
+          this.refreshService.triggerRefresh('order-placed');
+          
+          // Force reload of cart items to reset the cart count
+          this.cartService.loadCartItems();
+        })
+      );
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<Order> {
