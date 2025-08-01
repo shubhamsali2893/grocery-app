@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CartService } from './services/cart.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,26 @@ import { CartService } from './services/cart.service';
                 <i class="fas fa-receipt me-2"></i>
                 Orders
               </a>
+              <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
+                <a class="nav-link" routerLink="/login" routerLinkActive="active">
+                  <i class="fas fa-sign-in-alt me-2"></i>
+                  Sign In
+                </a>
+                <a class="nav-link" routerLink="/signup" routerLinkActive="active">
+                  <i class="fas fa-user-plus me-2"></i>
+                  Sign Up
+                </a>
+              </ng-container>
+              <ng-template #loggedIn>
+                <span class="nav-link disabled">
+                  <i class="fas fa-user me-2"></i>
+                  {{ auth.getUser()?.username }}
+                </span>
+                <a class="nav-link" (click)="logout()" style="cursor:pointer;">
+                  <i class="fas fa-sign-out-alt me-2"></i>
+                  Logout
+                </a>
+              </ng-template>
             </div>
           </div>
         </div>
@@ -182,11 +203,18 @@ export class AppComponent implements OnInit {
   cartItemCount = 0;
   showBanner = true;
 
-  constructor(private cartService: CartService) {
+  constructor(
+    private cartService: CartService,
+    public auth: AuthService
+  ) {
     // Subscribe to cart changes
     this.cartService.cartItems$.subscribe(items => {
       this.cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
     });
+  }
+
+  logout() {
+    this.auth.logout();
   }
 
   ngOnInit() {
