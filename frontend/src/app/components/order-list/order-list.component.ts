@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 import { Order } from '../../models/order.model';
 
 @Component({
@@ -15,10 +16,15 @@ export class OrderListComponent implements OnInit {
   orders: Order[] = [];
   loading = true;
   searchCustomer = '';
+  isAdmin = false;
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
+    this.isAdmin = this.authService.isAdmin();
     this.loadOrders();
   }
 

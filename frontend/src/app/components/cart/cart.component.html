@@ -172,9 +172,26 @@
           <strong class="text-primary h5">${{ (cartTotal + 4.99).toFixed(2) }}</strong>
         </div>
         
-        <a routerLink="/checkout" class="btn btn-secondary w-100 checkout-btn">
+        <!-- Show checkout button for logged in users -->
+        <a *ngIf="isLoggedIn" routerLink="/checkout" class="btn btn-secondary w-100 checkout-btn">
           <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
         </a>
+        
+        <!-- Show login/signup buttons for guest users -->
+        <div *ngIf="!isLoggedIn" class="guest-checkout-options">
+          <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            Please sign in or create an account to complete your purchase
+          </div>
+          <div class="d-grid gap-2">
+            <a routerLink="/login" class="btn btn-primary">
+              <i class="fas fa-sign-in-alt me-2"></i>Sign In to Continue
+            </a>
+            <a routerLink="/signup" class="btn btn-outline-primary">
+              <i class="fas fa-user-plus me-2"></i>Create New Account
+            </a>
+          </div>
+        </div>
         
         <div class="secure-checkout mt-3 text-center">
           <i class="fas fa-lock me-1"></i>

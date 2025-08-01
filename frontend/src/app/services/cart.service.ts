@@ -58,6 +58,11 @@ export class CartService {
     return this.http.delete<void>(`${this.apiUrl}`)
       .pipe(tap(() => this.loadCartItems()));
   }
+  
+  // Immediately reset the cart in the UI without waiting for API
+  resetCartUI(): void {
+    this.cartItemsSubject.next([]);
+  }
 
   getCartTotal(): Observable<{total: number}> {
     return this.http.get<{total: number}>(`${this.apiUrl}/total`);

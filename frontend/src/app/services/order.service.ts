@@ -5,6 +5,7 @@ import { Order, CustomerDetails } from '../models/order.model';
 import { environment } from '../../environments/environment';
 import { RefreshService } from './refresh.service';
 import { CartService } from './cart.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,20 @@ export class OrderService {
   constructor(
     private http: HttpClient, 
     private refreshService: RefreshService,
-    private cartService: CartService
+    private cartService: CartService,
+    private authService: AuthService
   ) { }
 
   getAllOrders(): Observable<Order[]> {
+    // If user is admin, return all orders
+    // If user is logged in but not admin, return only their orders
+    // If user is not logged in, return empty array (handled by auth guard)
+    if (this.authService.isAdmin()) {
+      return this.http.get<Order[]>(this.apiUrl);
+    } else if (this.authService.isLoggedIn()) {
+      const user = this.authService.getUser();
+      return this.getOrdersByCustomer(user.username);
+    }
     return this.http.get<Order[]>(this.apiUrl);
   }
 

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { CartItem } from '../../models/cart-item.model';
 
 @Component({
@@ -14,10 +15,15 @@ export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
   cartTotal = 0;
   loading = true;
+  isLoggedIn = false;
 
-  constructor(private cartService: CartService) {}
+  constructor(
+    private cartService: CartService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    this.isLoggedIn = this.authService.isLoggedIn();
     this.loadCartItems();
   }
 

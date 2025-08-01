@@ -22,6 +22,11 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+  
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return user && user.role === 'ADMIN';
+  }
 
   logout() {
     localStorage.removeItem(this.tokenKey);

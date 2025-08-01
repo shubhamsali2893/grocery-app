@@ -23,19 +23,35 @@ import { AuthService } from './services/auth.service';
           
           <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto">
-              <a class="nav-link" routerLink="/products" routerLinkActive="active">
-                <i class="fas fa-store me-2"></i>
-                Shop
-              </a>
-              <a class="nav-link position-relative" routerLink="/cart" routerLinkActive="active">
-                <i class="fas fa-shopping-cart me-2"></i>
-                Cart
-                <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
-              </a>
-              <a class="nav-link" routerLink="/orders" routerLinkActive="active">
-                <i class="fas fa-receipt me-2"></i>
-                Orders
-              </a>
+              <!-- Regular user navigation -->
+              <ng-container *ngIf="!auth.isAdmin()">
+                <a class="nav-link" routerLink="/products" routerLinkActive="active">
+                  <i class="fas fa-store me-2"></i>
+                  Shop
+                </a>
+                <a class="nav-link position-relative" routerLink="/cart" routerLinkActive="active">
+                  <i class="fas fa-shopping-cart me-2"></i>
+                  Cart
+                  <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+                </a>
+                <!-- Only show My Orders when logged in -->
+                <a *ngIf="auth.isLoggedIn()" class="nav-link" routerLink="/orders" routerLinkActive="active">
+                  <i class="fas fa-receipt me-2"></i>
+                  My Orders
+                </a>
+              </ng-container>
+              
+              <!-- Admin navigation -->
+              <ng-container *ngIf="auth.isAdmin()">
+                <a class="nav-link" routerLink="/orders" routerLinkActive="active">
+                  <i class="fas fa-receipt me-2"></i>
+                  Manage Orders
+                </a>
+                <!-- // <span class="nav-link admin-badge">
+                //   <i class="fas fa-user-shield me-2"></i>
+                //   Admin
+                // </span> -->
+              </ng-container>
               <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
                 <a class="nav-link" routerLink="/login" routerLinkActive="active">
                   <i class="fas fa-sign-in-alt me-2"></i>
@@ -157,6 +173,15 @@ import { AuthService } from './services/auth.service';
       border-radius: 3px;
     }
     
+    .admin-badge {
+      background-color: var(--danger-light);
+      color: var(--danger);
+      border-radius: 4px;
+      padding: 4px 12px;
+      margin-left: 10px;
+      font-weight: 600;
+    }
+    
     .promo-banner {
       background-color: var(--secondary);
       color: white;
@@ -214,7 +239,24 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.auth.logout();
+    // Immediately reset the cart in the UI
+    this.cartService.resetCartUI();
+    this.cartItemCount = 0;
+    
+    // Clear the cart before logging out
+    this.cartService.clearCart().subscribe({
+      next: () => {
+        this.auth.logout();
+        // Force reload to ensure a complete reset of the application state
+        window.location.href = '/products'; // Redirect to shop page after logout
+      },
+      error: (error) => {
+        console.error('Error clearing cart:', error);
+        // Still logout even if cart clearing fails
+        this.auth.logout();
+        window.location.href = '/products';
+      }
+    });
   }
 
   ngOnInit() {
