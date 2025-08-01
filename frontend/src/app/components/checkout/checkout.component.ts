@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,13 +15,35 @@ import { CustomerDetails } from '../../models/order.model';
   templateUrl: './checkout.component.html'
 })
 export class CheckoutComponent implements OnInit {
+  @ViewChild('checkoutForm') checkoutForm!: NgForm;
   cartItems: CartItem[] = [];
   cartTotal = 0;
   customerDetails: CustomerDetails = {
     customerName: '',
     customerAddress: '',
-    customerPhone: ''
+    customerPhone: '',
+    customerEmail: '',
+    paymentMethod: 'CREDIT_CARD',
+    shippingMethod: 'STANDARD',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: '',
+    savePaymentInfo: false
   };
+  
+  paymentMethods = [
+    { id: 'CREDIT_CARD', name: 'Credit Card' },
+    { id: 'COD', name: 'Cash on Delivery' }
+  ];
+  
+  shippingMethods = [
+    { id: 'STANDARD', name: 'Standard Delivery (2-3 days)', fee: 4.99, freeOver: 50 },
+    { id: 'EXPRESS', name: 'Express Delivery (Next day)', fee: 9.99, freeOver: null }
+  ];
+  
+  currentStep = 1;
+  totalSteps = 3;
+  shippingFee = 4.99;
   placing = false;
   orderPlaced = false;
   placedOrder: any = null;
@@ -33,6 +56,7 @@ export class CheckoutComponent implements OnInit {
 
   ngOnInit() {
     this.loadCartItems();
+    this.updateShippingFee();
   }
 
   loadCartItems() {
@@ -52,6 +76,52 @@ export class CheckoutComponent implements OnInit {
 
   calculateTotal() {
     this.cartTotal = this.cartItems.reduce((total, item) => total + item.totalPrice, 0);
+    this.updateShippingFee();
+  }
+  
+  updateShippingFee() {
+    const selectedMethod = this.shippingMethods.find(m => m.id === this.customerDetails.shippingMethod);
+    if (selectedMethod) {
+      if (selectedMethod.freeOver && this.cartTotal >= selectedMethod.freeOver) {
+        this.shippingFee = 0;
+      } else {
+        this.shippingFee = selectedMethod.fee;
+      }
+    }
+  }
+  
+  nextStep() {
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+    }
+  }
+  
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+  
+  onShippingMethodChange() {
+    this.updateShippingFee();
+  }
+  
+  isCustomerInfoValid(): boolean {
+    // Check if all required customer info fields are filled and valid
+    return !!this.customerDetails.customerName && 
+           !!this.customerDetails.customerPhone && 
+           !!this.customerDetails.customerEmail && 
+           !!this.customerDetails.customerAddress;
+  }
+  
+  isPaymentStepInvalid(): boolean {
+    // Only validate credit card fields if credit card payment is selected
+    if (this.customerDetails.paymentMethod === 'CREDIT_CARD') {
+      return !this.customerDetails.cardNumber || 
+             !this.customerDetails.cardExpiry || 
+             !this.customerDetails.cardCvv;
+    }
+    return false; // Other payment methods don't need validation
   }
 
   placeOrder() {
@@ -61,7 +131,16 @@ export class CheckoutComponent implements OnInit {
 
     this.placing = true;
     
-    this.orderService.placeOrder(this.customerDetails).subscribe({
+    // Remove sensitive card details before sending to server if not saving payment info
+    const orderDetails = {...this.customerDetails};
+    if (!orderDetails.savePaymentInfo) {
+      delete orderDetails.cardNumber;
+      delete orderDetails.cardExpiry;
+      delete orderDetails.cardCvv;
+      delete orderDetails.savePaymentInfo;
+    }
+    
+    this.orderService.placeOrder(orderDetails).subscribe({
       next: (order) => {
         this.placedOrder = order;
         this.orderPlaced = true;
@@ -72,6 +151,20 @@ export class CheckoutComponent implements OnInit {
         
         // Clear local cart items array
         this.cartItems = [];
+        
+        // Reset form
+        this.customerDetails = {
+          customerName: '',
+          customerAddress: '',
+          customerPhone: '',
+          customerEmail: '',
+          paymentMethod: 'CREDIT_CARD',
+          shippingMethod: 'STANDARD',
+          cardNumber: '',
+          cardExpiry: '',
+          cardCvv: '',
+          savePaymentInfo: false
+        };
       },
       error: (error) => {
         console.error('Error placing order:', error);

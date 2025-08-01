@@ -38,14 +38,9 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<Order> placeOrder(@RequestBody Map<String, String> customerDetails) {
-        
-        String customerName = customerDetails.get("customerName");
-        String customerAddress = customerDetails.get("customerAddress");
-        String customerPhone = customerDetails.get("customerPhone");
-        
+    public ResponseEntity<Order> placeOrder(@RequestBody Map<String, String> orderDetails) {
         try {
-            Order order = orderService.placeOrder(customerName, customerAddress, customerPhone);
+            Order order = orderService.placeOrder(orderDetails);
             return ResponseEntity.ok(order);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();

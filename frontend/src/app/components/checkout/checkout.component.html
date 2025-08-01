@@ -2,78 +2,349 @@
   <div class="col-md-8">
     <h2><i class="fas fa-credit-card me-2"></i>Checkout</h2>
     
+    <!-- Progress bar for checkout steps -->
+    <div class="checkout-progress mb-4" *ngIf="!orderPlaced">
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" [style.width]="(currentStep / totalSteps * 100) + '%'"></div>
+      </div>
+      <div class="d-flex justify-content-between mt-2">
+        <div class="step" [class.active]="currentStep >= 1">
+          <div class="step-icon">1</div>
+          <div class="step-label">Customer Info</div>
+        </div>
+        <div class="step" [class.active]="currentStep >= 2">
+          <div class="step-icon">2</div>
+          <div class="step-label">Shipping</div>
+        </div>
+        <div class="step" [class.active]="currentStep >= 3">
+          <div class="step-icon">3</div>
+          <div class="step-label">Payment</div>
+        </div>
+      </div>
+    </div>
+    
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Customer Information</h5>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <span *ngIf="currentStep === 1">Customer Information</span>
+          <span *ngIf="currentStep === 2">Shipping Details</span>
+          <span *ngIf="currentStep === 3">Payment Information</span>
+        </h5>
+        <span class="badge bg-primary" *ngIf="!orderPlaced">Step {{currentStep}} of {{totalSteps}}</span>
       </div>
       <div class="card-body">
         <form #checkoutForm="ngForm" (ngSubmit)="placeOrder()" *ngIf="!orderPlaced">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="customerName" class="form-label">Full Name *</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                id="customerName"
-                name="customerName"
-                [(ngModel)]="customerDetails.customerName" 
-                required
-                #customerName="ngModel">
-              <div class="invalid-feedback" *ngIf="customerName.invalid && customerName.touched">
-                Please provide your full name.
+          
+          <!-- Step 1: Customer Information -->
+          <div *ngIf="currentStep === 1">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="customerName" class="form-label">Full Name *</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="customerName"
+                  name="customerName"
+                  [(ngModel)]="customerDetails.customerName" 
+                  required
+                  #customerName="ngModel">
+                <div class="invalid-feedback" *ngIf="customerName.invalid && customerName.touched">
+                  Please provide your full name.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="customerPhone" class="form-label">Phone Number *</label>
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  id="customerPhone"
+                  name="customerPhone"
+                  [(ngModel)]="customerDetails.customerPhone" 
+                  required
+                  #customerPhone="ngModel">
+                <div class="invalid-feedback" *ngIf="customerPhone.invalid && customerPhone.touched">
+                  Please provide your phone number.
+                </div>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="customerPhone" class="form-label">Phone Number *</label>
+            <div class="mb-3">
+              <label for="customerEmail" class="form-label">Email Address *</label>
               <input 
-                type="tel" 
+                type="email" 
                 class="form-control" 
-                id="customerPhone"
-                name="customerPhone"
-                [(ngModel)]="customerDetails.customerPhone" 
+                id="customerEmail"
+                name="customerEmail"
+                [(ngModel)]="customerDetails.customerEmail" 
                 required
-                #customerPhone="ngModel">
-              <div class="invalid-feedback" *ngIf="customerPhone.invalid && customerPhone.touched">
-                Please provide your phone number.
+                email
+                #customerEmail="ngModel">
+              <div class="invalid-feedback" *ngIf="customerEmail.invalid && customerEmail.touched">
+                Please provide a valid email address.
               </div>
             </div>
-          </div>
-          <div class="mb-3">
-            <label for="customerAddress" class="form-label">Delivery Address *</label>
-            <textarea 
-              class="form-control" 
-              id="customerAddress"
-              name="customerAddress"
-              rows="3"
-              [(ngModel)]="customerDetails.customerAddress" 
-              required
-              #customerAddress="ngModel"
-              placeholder="Enter your complete delivery address..."></textarea>
-            <div class="invalid-feedback" *ngIf="customerAddress.invalid && customerAddress.touched">
-              Please provide your delivery address.
+            <div class="mb-3">
+              <label for="customerAddress" class="form-label">Delivery Address *</label>
+              <textarea 
+                class="form-control" 
+                id="customerAddress"
+                name="customerAddress"
+                rows="3"
+                [(ngModel)]="customerDetails.customerAddress" 
+                required
+                #customerAddress="ngModel"
+                placeholder="Enter your complete delivery address..."></textarea>
+              <div class="invalid-feedback" *ngIf="customerAddress.invalid && customerAddress.touched">
+                Please provide your delivery address.
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+                <i class="fas fa-arrow-left me-2"></i>Back to Cart
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary" 
+                [disabled]="!isCustomerInfoValid()"
+                (click)="nextStep()">
+                Continue to Shipping
+                <i class="fas fa-arrow-right ms-2"></i>
+              </button>
             </div>
           </div>
           
-          <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
-              <i class="fas fa-arrow-left me-2"></i>Back to Cart
-            </button>
-            <button 
-              type="submit" 
-              class="btn btn-success" 
-              [disabled]="checkoutForm.invalid || placing">
-              <span *ngIf="placing" class="spinner-border spinner-border-sm me-2"></span>
-              <i class="fas fa-check me-2" *ngIf="!placing"></i>
-              {{ placing ? 'Placing Order...' : 'Place Order' }}
-            </button>
+          <!-- Step 2: Shipping Details -->
+          <div *ngIf="currentStep === 2">
+            <div class="mb-4">
+              <label class="form-label">Shipping Method *</label>
+              <div class="shipping-options">
+                <div *ngFor="let method of shippingMethods" class="shipping-option mb-3">
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="shippingMethod" 
+                      [id]="'shipping-' + method.id" 
+                      [value]="method.id"
+                      [(ngModel)]="customerDetails.shippingMethod"
+                      (change)="onShippingMethodChange()">
+                    <label class="form-check-label" [for]="'shipping-' + method.id">
+                      <div class="d-flex justify-content-between align-items-center w-100">
+                        <div>
+                          <strong>{{ method.name }}</strong>
+                          <div *ngIf="method.freeOver && cartTotal >= method.freeOver" class="text-success small">
+                            <i class="fas fa-check-circle me-1"></i> Free shipping on orders over ${{ method.freeOver }}
+                          </div>
+                        </div>
+                        <div>
+                          <span *ngIf="method.freeOver && cartTotal >= method.freeOver" class="text-success fw-bold">FREE</span>
+                          <span *ngIf="!(method.freeOver && cartTotal >= method.freeOver)">${{ method.fee.toFixed(2) }}</span>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="shipping-summary p-3 bg-light rounded mb-4">
+              <h6>Delivery Summary</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Estimated Delivery:</span>
+                <span class="fw-bold">
+                  {{ customerDetails.shippingMethod === 'EXPRESS' ? 'Tomorrow' : '2-3 Business Days' }}
+                </span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Shipping Fee:</span>
+                <span class="fw-bold">
+                  {{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : 'FREE' }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
+                <i class="fas fa-arrow-left me-2"></i>Back to Customer Info
+              </button>
+              <button type="button" class="btn btn-primary" (click)="nextStep()">
+                Continue to Payment
+                <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Step 3: Payment Information -->
+          <div *ngIf="currentStep === 3">
+            <div class="mb-4">
+              <label class="form-label">Payment Method *</label>
+              <div class="payment-options">
+                <div *ngFor="let method of paymentMethods" class="payment-option mb-3">
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="paymentMethod" 
+                      [id]="'payment-' + method.id" 
+                      [value]="method.id"
+                      [(ngModel)]="customerDetails.paymentMethod">
+                    <label class="form-check-label" [for]="'payment-' + method.id">
+                      <div class="d-flex align-items-center">
+                        <i class="fas" 
+                          [class.fa-credit-card]="method.id === 'CREDIT_CARD'"
+                          [class.fa-money-bill]="method.id === 'COD'"
+                          style="font-size: 1.2rem; width: 30px;"></i>
+                        <span>{{ method.name }}</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Credit Card Details -->
+            <div *ngIf="customerDetails.paymentMethod === 'CREDIT_CARD'" class="payment-details p-3 border rounded mb-4">
+              <div class="row">
+                <div class="col-12 mb-3">
+                  <label for="cardNumber" class="form-label">Card Number *</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="cardNumber"
+                    name="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    [(ngModel)]="customerDetails.cardNumber" 
+                    required
+                    #cardNumber="ngModel">
+                  <div class="invalid-feedback" *ngIf="cardNumber.invalid && cardNumber.touched">
+                    Please enter a valid card number.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="cardExpiry" class="form-label">Expiry Date *</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="cardExpiry"
+                    name="cardExpiry"
+                    placeholder="MM/YY"
+                    [(ngModel)]="customerDetails.cardExpiry" 
+                    required
+                    #cardExpiry="ngModel">
+                  <div class="invalid-feedback" *ngIf="cardExpiry.invalid && cardExpiry.touched">
+                    Please enter a valid expiry date.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="cardCvv" class="form-label">CVV *</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="cardCvv"
+                    name="cardCvv"
+                    placeholder="123"
+                    [(ngModel)]="customerDetails.cardCvv" 
+                    required
+                    #cardCvv="ngModel">
+                  <div class="invalid-feedback" *ngIf="cardCvv.invalid && cardCvv.touched">
+                    Please enter a valid CVV.
+                  </div>
+                </div>
+              </div>
+              <div class="form-check mt-2">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  id="savePaymentInfo"
+                  name="savePaymentInfo"
+                  [(ngModel)]="customerDetails.savePaymentInfo">
+                <label class="form-check-label" for="savePaymentInfo">
+                  Save my payment information for future orders
+                </label>
+              </div>
+            </div>
+            
+
+            
+            <!-- COD Message -->
+            <div *ngIf="customerDetails.paymentMethod === 'COD'" class="payment-details p-3 border rounded mb-4">
+              <p class="mb-0">
+                <i class="fas fa-money-bill me-2 text-success"></i>
+                Pay with cash upon delivery. Please have the exact amount ready.
+              </p>
+            </div>
+            
+            <div class="order-summary p-3 bg-light rounded mb-4">
+              <h6>Order Summary</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span>${{ cartTotal.toFixed(2) }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Shipping:</span>
+                <span>{{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : 'FREE' }}</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold">
+                <span>Total:</span>
+                <span>${{ (cartTotal + shippingFee).toFixed(2) }}</span>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
+                <i class="fas fa-arrow-left me-2"></i>Back to Shipping
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-success" 
+                [disabled]="isPaymentStepInvalid() || placing">
+                <span *ngIf="placing" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="fas fa-check me-2" *ngIf="!placing"></i>
+                {{ placing ? 'Processing Payment...' : 'Place Order' }}
+              </button>
+            </div>
           </div>
         </form>
 
         <div *ngIf="orderPlaced" class="text-center py-4">
-          <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
-          <h3 class="mt-3 text-success">Order Placed Successfully!</h3>
-          <p class="text-muted">Your order #{{ placedOrder?.id }} has been confirmed.</p>
-          <p class="text-muted">Estimated delivery: {{ getFormattedDate(placedOrder?.estimatedDelivery) }}</p>
+          <div class="order-success-animation mb-4">
+            <i class="fas fa-check-circle text-success"></i>
+          </div>
+          <h3 class="text-success">Order Placed Successfully!</h3>
+          <div class="order-number my-4 p-3 border border-success rounded bg-success-light">
+            <p class="mb-1 text-muted">Order Number</p>
+            <h4 class="mb-0 text-success">{{ placedOrder?.orderNumber }}</h4>
+          </div>
+          <div class="order-details p-4 bg-light rounded mb-4">
+            <div class="row">
+              <div class="col-md-6 text-start mb-3">
+                <p class="text-muted mb-1">Order Date</p>
+                <p class="mb-0 fw-bold">{{ getFormattedDate(placedOrder?.orderDate) }}</p>
+              </div>
+              <div class="col-md-6 text-start mb-3">
+                <p class="text-muted mb-1">Estimated Delivery</p>
+                <p class="mb-0 fw-bold">{{ getFormattedDate(placedOrder?.estimatedDelivery) }}</p>
+              </div>
+              <div class="col-md-6 text-start mb-3">
+                <p class="text-muted mb-1">Payment Method</p>
+                <p class="mb-0 fw-bold">{{ placedOrder?.paymentMethod || 'Credit Card' }}</p>
+              </div>
+              <div class="col-md-6 text-start mb-3">
+                <p class="text-muted mb-1">Payment Status</p>
+                <p class="mb-0">
+                  <span class="badge" [ngClass]="{
+                    'bg-success': placedOrder?.paymentStatus === 'PAID',
+                    'bg-warning': placedOrder?.paymentStatus === 'PENDING'
+                  }">{{ placedOrder?.paymentStatus || 'PAID' }}</span>
+                </p>
+              </div>
+              <div class="col-12 text-start">
+                <p class="text-muted mb-1">Shipping Address</p>
+                <p class="mb-0 fw-bold">{{ placedOrder?.customerAddress }}</p>
+              </div>
+            </div>
+          </div>
           <div class="mt-4">
             <button class="btn btn-primary me-2" (click)="viewOrder()">
               <i class="fas fa-receipt me-2"></i>View Order Details
@@ -93,7 +364,7 @@
         <h5 class="mb-0">Order Summary</h5>
       </div>
       <div class="card-body">
-        <div *ngIf="cartItems.length === 0" class="text-center text-muted">
+        <div *ngIf="cartItems.length === 0 && !orderPlaced" class="text-center text-muted">
           <i class="fas fa-shopping-cart mb-2" style="font-size: 2rem;"></i>
           <p>Your cart is empty</p>
         </div>

@@ -2,6 +2,7 @@ import { GroceryItem } from './grocery-item.model';
 
 export interface Order {
   id: number;
+  orderNumber: string;
   orderDate: string;
   estimatedDelivery: string;
   totalAmount: number;
@@ -9,6 +10,11 @@ export interface Order {
   customerName: string;
   customerAddress: string;
   customerPhone: string;
+  customerEmail?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  shippingMethod?: string;
+  shippingFee?: number;
   orderItems: OrderItem[];
 }
 
@@ -33,4 +39,11 @@ export interface CustomerDetails {
   customerName: string;
   customerAddress: string;
   customerPhone: string;
+  customerEmail?: string;
+  paymentMethod?: string;
+  shippingMethod?: string;
+  cardNumber?: string;
+  cardExpiry?: string;
+  cardCvv?: string;
+  savePaymentInfo?: boolean;
 }

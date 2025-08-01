@@ -467,6 +467,151 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+/* Checkout process styling */
+.checkout-progress .progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--gray-200);
+  margin-bottom: 1rem;
+}
+
+.checkout-progress .progress-bar {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.checkout-progress .step {
+  text-align: center;
+  position: relative;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.checkout-progress .step.active {
+  opacity: 1;
+}
+
+.checkout-progress .step-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--gray-300);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 5px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.checkout-progress .step.active .step-icon {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.2);
+}
+
+.checkout-progress .step-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Shipping and payment options */
+.shipping-option, .payment-option {
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.shipping-option:hover, .payment-option:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.1);
+}
+
+.shipping-option .form-check, .payment-option .form-check {
+  margin: 0;
+  padding: 0;
+}
+
+.shipping-option .form-check-input, .payment-option .form-check-input {
+  position: absolute;
+  opacity: 0;
+}
+
+.shipping-option .form-check-label, .payment-option .form-check-label {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.shipping-option input:checked + .form-check-label,
+.payment-option input:checked + .form-check-label {
+  font-weight: 500;
+}
+
+.shipping-option input:checked + .form-check-label::before,
+.payment-option input:checked + .form-check-label::before {
+  content: '✓';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(106, 17, 203, 0.3);
+}
+
+/* Order success animation */
+.order-success-animation {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  position: relative;
+  animation: success-pulse 2s infinite;
+}
+
+.order-success-animation i {
+  font-size: 5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes success-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(10, 163, 96, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(10, 163, 96, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(10, 163, 96, 0);
+  }
+}
+
+.order-number {
+  transition: all 0.3s ease;
+}
+
+.order-number:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(10, 163, 96, 0.15);
+}
+
+.bg-success-light {
+  background-color: var(--success-light);
+}
+
 .badge-success {
   background-color: var(--success-light);
   color: var(--success);

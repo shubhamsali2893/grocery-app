@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Order placeOrder(String customerName, String customerAddress, String customerPhone) {
+    public Order placeOrder(Map<String, String> orderDetails) {
         List<CartItem> cartItems = cartService.getCartItems();
         
         if (cartItems.isEmpty()) {
@@ -53,8 +54,34 @@ public class OrderService {
         }
 
         Double totalAmount = cartService.getCartTotal();
+        Double shippingFee = 0.0;
         
-        Order order = new Order(totalAmount, customerName, customerAddress, customerPhone);
+        // Calculate shipping fee based on shipping method
+        String shippingMethod = orderDetails.getOrDefault("shippingMethod", "STANDARD");
+        if ("EXPRESS".equals(shippingMethod)) {
+            shippingFee = 9.99;
+        } else if ("STANDARD".equals(shippingMethod)) {
+            shippingFee = totalAmount < 50 ? 4.99 : 0.0; // Free shipping for orders over $50
+        }
+        
+        // Create order with all details
+        Order order = new Order();
+        order.setTotalAmount(totalAmount + shippingFee);
+        order.setCustomerName(orderDetails.get("customerName"));
+        order.setCustomerAddress(orderDetails.get("customerAddress"));
+        order.setCustomerPhone(orderDetails.get("customerPhone"));
+        order.setCustomerEmail(orderDetails.get("customerEmail"));
+        order.setPaymentMethod(orderDetails.get("paymentMethod"));
+        order.setShippingMethod(shippingMethod);
+        order.setShippingFee(shippingFee);
+        
+        // Set payment status based on payment method
+        if ("COD".equals(orderDetails.get("paymentMethod"))) {
+            order.setPaymentStatus("PENDING");
+        } else {
+            order.setPaymentStatus("PAID");
+        }
+        
         order = orderRepository.save(order);
 
         // Create order items from cart items and update stock
