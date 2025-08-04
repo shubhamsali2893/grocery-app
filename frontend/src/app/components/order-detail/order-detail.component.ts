@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 import { Order, OrderStatus } from '../../models/order.model';
 
 @Component({
@@ -21,7 +22,8 @@ export class OrderDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -79,6 +81,10 @@ export class OrderDetailComponent implements OnInit {
   canCancelOrder(): boolean {
     if (!this.order) return false;
     return this.order.status !== OrderStatus.DELIVERED && this.order.status !== OrderStatus.CANCELLED;
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   updateStatus(newStatus: string) {

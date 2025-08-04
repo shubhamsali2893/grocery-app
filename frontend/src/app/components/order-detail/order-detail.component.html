@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <div class="card" *ngIf="order.status !== OrderStatus.DELIVERED && order.status !== OrderStatus.CANCELLED">
+    <div class="card" *ngIf="isAdmin() && order.status !== OrderStatus.DELIVERED && order.status !== OrderStatus.CANCELLED">
       <div class="card-header">
         <h5 class="mb-0">Update Status</h5>
       </div>
