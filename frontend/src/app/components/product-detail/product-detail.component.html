@@ -1,0 +1,71 @@
+<div class="modal fade show" [class.d-block]="isVisible" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-grocery-green">
+          <i class="fas fa-info-circle me-2"></i>Product Details
+        </h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+      
+      <div class="modal-body" *ngIf="product">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="product-image-container mb-3">
+              <img [src]="product.imageUrl" [alt]="product.name" class="img-fluid rounded">
+              <span class="category-badge">{{ product.category }}</span>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <h4 class="fw-bold mb-2">{{ product.name }}</h4>
+            <p class="text-muted mb-3">{{ product.description }}</p>
+            
+            <div class="price-section mb-3">
+              <span class="h3 text-success fw-bold">${{ product.price.toFixed(2) }}</span>
+              <span class="badge ms-2" [ngClass]="getStockStatus().class">
+                <i class="fas fa-cubes me-1"></i>
+                {{ getStockStatus().status }}
+              </span>
+            </div>
+            
+            <div class="quantity-section mb-3">
+              <label class="form-label fw-medium">Quantity:</label>
+              <div class="d-flex align-items-center">
+                <button 
+                  class="btn btn-sm btn-outline-secondary" 
+                  (click)="decreaseQuantity()"
+                  [disabled]="quantity <= 1">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span class="mx-3 fw-medium">{{ quantity }}</span>
+                <button 
+                  class="btn btn-sm btn-outline-secondary" 
+                  (click)="increaseQuantity()"
+                  [disabled]="quantity >= product.availableQuantity">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              <button 
+                class="btn btn-primary me-2" 
+                (click)="addToCart()"
+                [disabled]="product.availableQuantity === 0">
+                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+              </button>
+              <button 
+                class="btn btn-outline-danger" 
+                (click)="toggleWishlist()">
+                <i class="fas" [class.fa-heart]="isInWishlist" [class.fa-heart-o]="!isInWishlist"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="isVisible"></div>

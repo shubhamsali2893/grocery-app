@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-8">
-    <h2><i class="fas fa-credit-card me-2"></i>Checkout</h2>
+    <h2><i class="fas fa-credit-card me-2"></i>{{ translationService.translate('checkout.title') }}</h2>
     
     <!-- Progress bar for checkout steps -->
     <div class="checkout-progress mb-4" *ngIf="!orderPlaced">
@@ -10,15 +10,15 @@
       <div class="d-flex justify-content-between mt-2">
         <div class="step" [class.active]="currentStep >= 1">
           <div class="step-icon">1</div>
-          <div class="step-label">Customer Info</div>
+          <div class="step-label">{{ translationService.translate('checkout.step_customer') }}</div>
         </div>
         <div class="step" [class.active]="currentStep >= 2">
           <div class="step-icon">2</div>
-          <div class="step-label">Shipping</div>
+          <div class="step-label">{{ translationService.translate('checkout.step_shipping') }}</div>
         </div>
         <div class="step" [class.active]="currentStep >= 3">
           <div class="step-icon">3</div>
-          <div class="step-label">Payment</div>
+          <div class="step-label">{{ translationService.translate('checkout.step_payment') }}</div>
         </div>
       </div>
     </div>
@@ -26,9 +26,9 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-          <span *ngIf="currentStep === 1">Customer Information</span>
-          <span *ngIf="currentStep === 2">Shipping Details</span>
-          <span *ngIf="currentStep === 3">Payment Information</span>
+          <span *ngIf="currentStep === 1">{{ translationService.translate('checkout.customer_info') }}</span>
+          <span *ngIf="currentStep === 2">{{ translationService.translate('checkout.shipping_details') }}</span>
+          <span *ngIf="currentStep === 3">{{ translationService.translate('checkout.payment_info') }}</span>
         </h5>
         <span class="badge bg-primary" *ngIf="!orderPlaced">Step {{currentStep}} of {{totalSteps}}</span>
       </div>
@@ -39,7 +39,7 @@
           <div *ngIf="currentStep === 1">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="customerName" class="form-label">Full Name *</label>
+                <label for="customerName" class="form-label">{{ translationService.translate('checkout.customer_name') }} *</label>
                 <input 
                   type="text" 
                   class="form-control" 
@@ -58,7 +58,7 @@
                 </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="customerPhone" class="form-label">Phone Number *</label>
+                <label for="customerPhone" class="form-label">{{ translationService.translate('checkout.customer_phone') }} *</label>
                 <input 
                   type="tel" 
                   class="form-control" 
@@ -76,7 +76,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="customerEmail" class="form-label">Email Address *</label>
+              <label for="customerEmail" class="form-label">{{ translationService.translate('checkout.customer_email') }} *</label>
               <input 
                 type="email" 
                 class="form-control" 
@@ -93,7 +93,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="customerAddress" class="form-label">Delivery Address *</label>
+              <label for="customerAddress" class="form-label">{{ translationService.translate('checkout.customer_address') }} *</label>
               <textarea 
                 class="form-control" 
                 id="customerAddress"
@@ -126,7 +126,7 @@
           <!-- Step 2: Shipping Details -->
           <div *ngIf="currentStep === 2">
             <div class="mb-4">
-              <label class="form-label">Shipping Method *</label>
+              <label class="form-label">{{ translationService.translate('checkout.shipping_method') }} *</label>
               <div class="shipping-options">
                 <div *ngFor="let method of shippingMethods" class="shipping-option mb-3">
                   <div class="form-check">
@@ -143,7 +143,7 @@
                         <div>
                           <strong>{{ method.name }}</strong>
                           <div *ngIf="method.freeOver && cartTotal >= method.freeOver" class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> Free shipping on orders over ${{ method.freeOver }}
+                            <i class="fas fa-check-circle me-1"></i> {{ translationService.translate('checkout.free_shipping') }} ${{ method.freeOver }}
                           </div>
                         </div>
                         <div>
@@ -158,27 +158,27 @@
             </div>
             
             <div class="shipping-summary p-3 bg-light rounded mb-4">
-              <h6>Delivery Summary</h6>
+              <h6>{{ translationService.translate('checkout.delivery_summary') }}</h6>
               <div class="d-flex justify-content-between mb-2">
-                <span>Estimated Delivery:</span>
+                <span>{{ translationService.translate('checkout.estimated_delivery') }}:</span>
                 <span class="fw-bold">
-                  {{ customerDetails.shippingMethod === 'EXPRESS' ? 'Tomorrow' : '2-3 Business Days' }}
+                  {{ customerDetails.shippingMethod === 'EXPRESS' ? translationService.translate('checkout.tomorrow') : translationService.translate('checkout.business_days') }}
                 </span>
               </div>
               <div class="d-flex justify-content-between">
-                <span>Shipping Fee:</span>
+                <span>{{ translationService.translate('checkout.shipping_fee') }}:</span>
                 <span class="fw-bold">
-                  {{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : 'FREE' }}
+                  {{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : translationService.translate('checkout.free') }}
                 </span>
               </div>
             </div>
             
             <div class="d-flex justify-content-between mt-4">
               <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
-                <i class="fas fa-arrow-left me-2"></i>Back to Customer Info
+                <i class="fas fa-arrow-left me-2"></i>{{ translationService.translate('checkout.back_to_customer') }}
               </button>
               <button type="button" class="btn btn-primary" (click)="nextStep()">
-                Continue to Payment
+                {{ translationService.translate('checkout.continue_to_payment') }}
                 <i class="fas fa-arrow-right ms-2"></i>
               </button>
             </div>
@@ -187,7 +187,7 @@
           <!-- Step 3: Payment Information -->
           <div *ngIf="currentStep === 3">
             <div class="mb-4">
-              <label class="form-label">Payment Method *</label>
+              <label class="form-label">{{ translationService.translate('checkout.payment_method') }} *</label>
               <div class="payment-options">
                 <div *ngFor="let method of paymentMethods" class="payment-option mb-3">
                   <div class="form-check">
@@ -216,7 +216,7 @@
             <div *ngIf="customerDetails.paymentMethod === 'CREDIT_CARD'" class="payment-details p-3 border rounded mb-4">
               <div class="row">
                 <div class="col-12 mb-3">
-                  <label for="cardNumber" class="form-label">Card Number *</label>
+                  <label for="cardNumber" class="form-label">{{ translationService.translate('checkout.card_number') }} *</label>
                   <input 
                     type="text" 
                     class="form-control" 
@@ -234,7 +234,7 @@
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="cardExpiry" class="form-label">Expiry Date *</label>
+                  <label for="cardExpiry" class="form-label">{{ translationService.translate('checkout.card_expiry') }} *</label>
                   <input 
                     type="text" 
                     class="form-control" 
@@ -252,7 +252,7 @@
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="cardCvv" class="form-label">CVV *</label>
+                  <label for="cardCvv" class="form-label">{{ translationService.translate('checkout.card_cvv') }} *</label>
                   <input 
                     type="text" 
                     class="form-control" 
@@ -278,7 +278,7 @@
                   name="savePaymentInfo"
                   [(ngModel)]="customerDetails.savePaymentInfo">
                 <label class="form-check-label" for="savePaymentInfo">
-                  Save my payment information for future orders
+                  {{ translationService.translate('checkout.save_payment') }}
                 </label>
               </div>
             </div>
@@ -289,30 +289,30 @@
             <div *ngIf="customerDetails.paymentMethod === 'COD'" class="payment-details p-3 border rounded mb-4">
               <p class="mb-0">
                 <i class="fas fa-money-bill me-2 text-success"></i>
-                Pay with cash upon delivery. Please have the exact amount ready.
+                {{ translationService.translate('checkout.cod_message') }}
               </p>
             </div>
             
             <div class="order-summary p-3 bg-light rounded mb-4">
-              <h6>Order Summary</h6>
+              <h6>{{ translationService.translate('checkout.order_summary') }}</h6>
               <div class="d-flex justify-content-between mb-2">
-                <span>Subtotal:</span>
+                <span>{{ translationService.translate('checkout.subtotal') }}:</span>
                 <span>${{ cartTotal.toFixed(2) }}</span>
               </div>
               <div class="d-flex justify-content-between mb-2">
-                <span>Shipping:</span>
-                <span>{{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : 'FREE' }}</span>
+                <span>{{ translationService.translate('checkout.shipping') }}:</span>
+                <span>{{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : translationService.translate('checkout.free') }}</span>
               </div>
               <hr>
               <div class="d-flex justify-content-between fw-bold">
-                <span>Total:</span>
+                <span>{{ translationService.translate('checkout.total') }}:</span>
                 <span>${{ (cartTotal + shippingFee).toFixed(2) }}</span>
               </div>
             </div>
             
             <div class="d-flex justify-content-between mt-4">
               <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
-                <i class="fas fa-arrow-left me-2"></i>Back to Shipping
+                <i class="fas fa-arrow-left me-2"></i>{{ translationService.translate('checkout.back_to_shipping') }}
               </button>
               <button 
                 type="submit" 
@@ -320,7 +320,7 @@
                 [disabled]="isPaymentStepInvalid() || placing">
                 <span *ngIf="placing" class="spinner-border spinner-border-sm me-2"></span>
                 <i class="fas fa-check me-2" *ngIf="!placing"></i>
-                {{ placing ? 'Processing Payment...' : 'Place Order' }}
+                {{ placing ? translationService.translate('checkout.processing') : translationService.translate('checkout.place_order') }}
               </button>
             </div>
           </div>
@@ -330,27 +330,27 @@
           <div class="order-success-animation mb-4">
             <i class="fas fa-check-circle text-success"></i>
           </div>
-          <h3 class="text-success">Order Placed Successfully!</h3>
+          <h3 class="text-success">{{ translationService.translate('checkout.order_success') }}</h3>
           <div class="order-number my-4 p-3 border border-success rounded bg-success-light">
-            <p class="mb-1 text-muted">Order Number</p>
+            <p class="mb-1 text-muted">{{ translationService.translate('checkout.order_number') }}</p>
             <h4 class="mb-0 text-success">{{ placedOrder?.orderNumber }}</h4>
           </div>
           <div class="order-details p-4 bg-light rounded mb-4">
             <div class="row">
               <div class="col-md-6 text-start mb-3">
-                <p class="text-muted mb-1">Order Date</p>
+                <p class="text-muted mb-1">{{ translationService.translate('checkout.order_date') }}</p>
                 <p class="mb-0 fw-bold">{{ getFormattedDate(placedOrder?.orderDate) }}</p>
               </div>
               <div class="col-md-6 text-start mb-3">
-                <p class="text-muted mb-1">Estimated Delivery</p>
+                <p class="text-muted mb-1">{{ translationService.translate('checkout.estimated_delivery') }}</p>
                 <p class="mb-0 fw-bold">{{ getFormattedDate(placedOrder?.estimatedDelivery) }}</p>
               </div>
               <div class="col-md-6 text-start mb-3">
-                <p class="text-muted mb-1">Payment Method</p>
+                <p class="text-muted mb-1">{{ translationService.translate('checkout.payment_method') }}</p>
                 <p class="mb-0 fw-bold">{{ placedOrder?.paymentMethod || 'Credit Card' }}</p>
               </div>
               <div class="col-md-6 text-start mb-3">
-                <p class="text-muted mb-1">Payment Status</p>
+                <p class="text-muted mb-1">{{ translationService.translate('checkout.payment_status') }}</p>
                 <p class="mb-0">
                   <span class="badge" [ngClass]="{
                     'bg-success': placedOrder?.paymentStatus === 'PAID',
@@ -359,17 +359,17 @@
                 </p>
               </div>
               <div class="col-12 text-start">
-                <p class="text-muted mb-1">Shipping Address</p>
+                <p class="text-muted mb-1">{{ translationService.translate('checkout.shipping_address') }}</p>
                 <p class="mb-0 fw-bold">{{ placedOrder?.customerAddress }}</p>
               </div>
             </div>
           </div>
           <div class="mt-4">
             <button class="btn btn-primary me-2" (click)="viewOrder()">
-              <i class="fas fa-receipt me-2"></i>View Order Details
+              <i class="fas fa-receipt me-2"></i>{{ translationService.translate('checkout.view_order_details') }}
             </button>
             <button class="btn btn-outline-primary" (click)="continueShopping()">
-              <i class="fas fa-store me-2"></i>Continue Shopping
+              <i class="fas fa-store me-2"></i>{{ translationService.translate('checkout.continue_shopping') }}
             </button>
           </div>
         </div>
@@ -380,12 +380,12 @@
   <div class="col-md-4">
     <div class="card">
       <div class="card-header">
-        <h5 class="mb-0">Order Summary</h5>
+        <h5 class="mb-0">{{ translationService.translate('checkout.order_summary') }}</h5>
       </div>
       <div class="card-body">
         <div *ngIf="cartItems.length === 0 && !orderPlaced" class="text-center text-muted">
           <i class="fas fa-shopping-cart mb-2" style="font-size: 2rem;"></i>
-          <p>Your cart is empty</p>
+          <p>{{ translationService.translate('cart.empty') }}</p>
         </div>
         
         <div *ngIf="cartItems.length > 0">
@@ -395,12 +395,12 @@
           </div>
           <hr>
           <div class="d-flex justify-content-between mb-2">
-            <span>Subtotal:</span>
+            <span>{{ translationService.translate('checkout.subtotal') }}:</span>
             <span>${{ cartTotal.toFixed(2) }}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <span>Delivery Fee:</span>
-            <span>{{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : 'FREE' }}</span>
+            <span>{{ translationService.translate('checkout.delivery_fee') }}:</span>
+            <span>{{ shippingFee > 0 ? '$' + shippingFee.toFixed(2) : translationService.translate('checkout.free') }}</span>
           </div>
           <hr>
           <div class="d-flex justify-content-between">
@@ -413,14 +413,14 @@
 
     <div class="card mt-3">
       <div class="card-body">
-        <h6><i class="fas fa-truck me-2"></i>Delivery Information</h6>
+        <h6><i class="fas fa-truck me-2"></i>{{ translationService.translate('checkout.delivery_information') }}</h6>
         <p class="small text-muted mb-1">
           <i class="fas fa-clock me-1"></i>
-          Estimated delivery: 1-2 hours
+          {{ translationService.translate('checkout.estimated_delivery') }}: 1-2 {{ translationService.translate('checkout.hours') }}
         </p>
         <p class="small text-muted mb-0">
           <i class="fas fa-shield-alt me-1"></i>
-          Safe and contactless delivery
+          {{ translationService.translate('checkout.safe_delivery') }}
         </p>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -20,7 +21,12 @@ export class SignupComponent {
   error = '';
   success = '';
 
-  constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient, 
+    private router: Router, 
+    private auth: AuthService,
+    public translationService: TranslationService
+  ) {}
 
   signup() {
     this.http.post<any>('http://localhost:8080/api/auth/signup', {

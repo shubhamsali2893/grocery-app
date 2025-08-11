@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CartService } from './services/cart.service';
 import { AuthService } from './services/auth.service';
+import { TranslationService } from './services/translation.service';
+import { NotificationComponent } from './components/notifications/notification.component';
+import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterOutlet, RouterModule, NotificationComponent, LanguageSelectorComponent],
   template: `
     <header>
       <nav class="navbar navbar-expand-lg navbar-light">
@@ -27,17 +30,21 @@ import { AuthService } from './services/auth.service';
               <ng-container *ngIf="!auth.isAdmin()">
                 <a class="nav-link" routerLink="/products" routerLinkActive="active">
                   <i class="fas fa-store me-2"></i>
-                  Shop
+                  {{ translationService.translate('nav.shop') }}
                 </a>
                 <a class="nav-link position-relative" routerLink="/cart" routerLinkActive="active">
                   <i class="fas fa-shopping-cart me-2"></i>
-                  Cart
+                  {{ translationService.translate('nav.cart') }}
                   <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+                </a>
+                <a class="nav-link" routerLink="/wishlist" routerLinkActive="active">
+                  <i class="fas fa-heart me-2"></i>
+                  {{ translationService.translate('nav.wishlist') }}
                 </a>
                 <!-- Only show My Orders when logged in -->
                 <a *ngIf="auth.isLoggedIn()" class="nav-link" routerLink="/orders" routerLinkActive="active">
                   <i class="fas fa-receipt me-2"></i>
-                  My Orders
+                  {{ translationService.translate('nav.orders') }}
                 </a>
               </ng-container>
               
@@ -45,7 +52,7 @@ import { AuthService } from './services/auth.service';
               <ng-container *ngIf="auth.isAdmin()">
                 <a class="nav-link" routerLink="/orders" routerLinkActive="active">
                   <i class="fas fa-receipt me-2"></i>
-                  Manage Orders
+                  {{ translationService.translate('nav.manage_orders') }}
                 </a>
                 <!-- // <span class="nav-link admin-badge">
                 //   <i class="fas fa-user-shield me-2"></i>
@@ -55,11 +62,11 @@ import { AuthService } from './services/auth.service';
               <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
                 <a class="nav-link" routerLink="/login" routerLinkActive="active">
                   <i class="fas fa-sign-in-alt me-2"></i>
-                  Sign In
+                  {{ translationService.translate('nav.login') }}
                 </a>
                 <a class="nav-link" routerLink="/signup" routerLinkActive="active">
                   <i class="fas fa-user-plus me-2"></i>
-                  Sign Up
+                  {{ translationService.translate('nav.signup') }}
                 </a>
               </ng-container>
               <ng-template #loggedIn>
@@ -69,9 +76,12 @@ import { AuthService } from './services/auth.service';
                 </span>
                 <a class="nav-link" (click)="logout()" style="cursor:pointer;">
                   <i class="fas fa-sign-out-alt me-2"></i>
-                  Logout
+                  {{ translationService.translate('nav.logout') }}
                 </a>
               </ng-template>
+              
+              <!-- Language Selector -->
+              <app-language-selector></app-language-selector>
             </div>
           </div>
         </div>
@@ -80,7 +90,7 @@ import { AuthService } from './services/auth.service';
       <div class="promo-banner" *ngIf="showBanner">
         <div class="container d-flex justify-content-between align-items-center">
           <div>
-            <i class="fas fa-truck-fast me-2"></i> Free delivery on orders over $50
+            <i class="fas fa-truck-fast me-2"></i> {{ translationService.translate('common.free_delivery') }}
           </div>
           <button class="btn-close btn-close-white" (click)="closeBanner()"></button>
         </div>
@@ -90,6 +100,9 @@ import { AuthService } from './services/auth.service';
     <main class="container py-5">
       <router-outlet></router-outlet>
     </main>
+    
+    <!-- Global Notifications -->
+    <app-notification></app-notification>
     
     <footer class="footer mt-5 py-5">
       <div class="container">
@@ -230,7 +243,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    public auth: AuthService
+    public auth: AuthService,
+    public translationService: TranslationService
   ) {
     // Subscribe to cart changes
     this.cartService.cartItems$.subscribe(items => {

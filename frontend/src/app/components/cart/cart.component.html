@@ -1,16 +1,16 @@
 <div class="row fade-in">
   <div class="col-md-8">
     <div class="section-header">
-      <h2 class="text-primary"><i class="fas fa-shopping-cart me-2 text-secondary"></i>Shopping Cart</h2>
-      <p class="text-muted">Review your selected items before checkout</p>
+      <h2 class="text-primary"><i class="fas fa-shopping-cart me-2 text-secondary"></i>{{ translationService.translate('cart.title') }}</h2>
+      <p class="text-muted">{{ translationService.translate('cart.review_items') }}</p>
     </div>
     
     <div *ngIf="!loading && cartItems.length === 0" class="empty-state fade-in">
       <i class="fas fa-shopping-basket text-secondary"></i>
-      <h4>Your cart is empty</h4>
-      <p>Looks like you haven't added any groceries yet</p>
+      <h4>{{ translationService.translate('cart.empty') }}</h4>
+      <p>{{ translationService.translate('cart.empty_message') }}</p>
       <a routerLink="/products" class="btn btn-primary btn-lg">
-        <i class="fas fa-store me-2"></i>Browse Fresh Groceries
+        <i class="fas fa-store me-2"></i>{{ translationService.translate('cart.browse_products') }}
       </a>
     </div>
 
@@ -27,7 +27,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <h5 class="mb-1 fw-bold">{{ item.groceryItem.name }}</h5>
+                <h5 class="mb-1 fw-bold">{{ getTranslatedProductName(item) }}</h5>
                 <p class="text-muted mb-1 small">{{ item.groceryItem.description }}</p>
                 <span class="price-badge">${{ item.groceryItem.price.toFixed(2) }} each</span>
               </div>
@@ -126,10 +126,10 @@
 
       <div class="d-flex justify-content-between mt-4 cart-actions">
         <button class="btn btn-outline-secondary" (click)="clearCart()">
-          <i class="fas fa-trash me-2"></i>Clear Cart
+          <i class="fas fa-trash me-2"></i>{{ translationService.translate('cart.clear_cart') }}
         </button>
         <a routerLink="/products" class="btn btn-outline-primary">
-          <i class="fas fa-store me-2"></i>Continue Shopping
+          <i class="fas fa-store me-2"></i>{{ translationService.translate('cart.continue_shopping') }}
         </a>
       </div>
       
@@ -145,7 +145,7 @@
   <div class="col-md-4" *ngIf="cartItems.length > 0">
     <div class="card summary-card fade-in shadow-sm">
       <div class="card-header">
-        <h5 class="mb-0 text-primary"><i class="fas fa-receipt me-2 text-secondary"></i>Order Summary</h5>
+        <h5 class="mb-0 text-primary"><i class="fas fa-receipt me-2 text-secondary"></i>{{ translationService.translate('cart.order_summary') }}</h5>
       </div>
       <div class="card-body">
         <div class="summary-items">
@@ -158,44 +158,44 @@
         <hr>
         
         <div class="d-flex justify-content-between mb-2">
-          <span class="text-muted">Subtotal:</span>
+          <span class="text-muted">{{ translationService.translate('cart.subtotal') }}:</span>
           <span>${{ cartTotal.toFixed(2) }}</span>
         </div>
         
         <div class="d-flex justify-content-between mb-2">
-          <span class="text-muted">Delivery:</span>
+          <span class="text-muted">{{ translationService.translate('cart.delivery') }}:</span>
           <span>$4.99</span>
         </div>
         
         <div class="d-flex justify-content-between mb-3">
-          <strong>Total: </strong>
+          <strong>{{ translationService.translate('cart.total') }}: </strong>
           <strong class="text-primary h5">${{ (cartTotal + 4.99).toFixed(2) }}</strong>
         </div>
         
         <!-- Show checkout button for logged in users -->
         <a *ngIf="isLoggedIn" routerLink="/checkout" class="btn btn-secondary w-100 checkout-btn">
-          <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+          <i class="fas fa-credit-card me-2"></i>{{ translationService.translate('cart.proceed_checkout') }}
         </a>
         
         <!-- Show login/signup buttons for guest users -->
         <div *ngIf="!isLoggedIn" class="guest-checkout-options">
           <div class="alert alert-info" role="alert">
             <i class="fas fa-info-circle me-2"></i>
-            Please sign in or create an account to complete your purchase
+            {{ translationService.translate('cart.signin_message') }}
           </div>
           <div class="d-grid gap-2">
             <a routerLink="/login" class="btn btn-primary">
-              <i class="fas fa-sign-in-alt me-2"></i>Sign In to Continue
+              <i class="fas fa-sign-in-alt me-2"></i>{{ translationService.translate('cart.signin_continue') }}
             </a>
             <a routerLink="/signup" class="btn btn-outline-primary">
-              <i class="fas fa-user-plus me-2"></i>Create New Account
+              <i class="fas fa-user-plus me-2"></i>{{ translationService.translate('cart.create_account') }}
             </a>
           </div>
         </div>
         
         <div class="secure-checkout mt-3 text-center">
           <i class="fas fa-lock me-1"></i>
-          <small class="text-muted">Secure checkout</small>
+          <small class="text-muted">{{ translationService.translate('cart.secure_checkout') }}</small>
         </div>
       </div>
     </div>

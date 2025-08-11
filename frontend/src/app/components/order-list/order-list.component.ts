@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { Order } from '../../models/order.model';
 
 @Component({
@@ -20,7 +21,8 @@ export class OrderListComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
-    public authService: AuthService
+    public authService: AuthService,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
+import { TranslationService } from '../../services/translation.service';
 import { CartItem } from '../../models/cart-item.model';
 import { CustomerDetails } from '../../models/order.model';
 
@@ -32,13 +33,13 @@ export class CheckoutComponent implements OnInit {
   };
   
   paymentMethods = [
-    { id: 'CREDIT_CARD', name: 'Credit Card' },
-    { id: 'COD', name: 'Cash on Delivery' }
+    { id: 'CREDIT_CARD', name: this.translationService.translate('checkout.credit_card') },
+    { id: 'COD', name: this.translationService.translate('checkout.cod') }
   ];
   
   shippingMethods = [
-    { id: 'STANDARD', name: 'Standard Delivery (2-3 days)', fee: 4.99, freeOver: 50 },
-    { id: 'EXPRESS', name: 'Express Delivery (Next day)', fee: 9.99, freeOver: null }
+    { id: 'STANDARD', name: this.translationService.translate('checkout.standard_delivery'), fee: 4.99, freeOver: 50 },
+    { id: 'EXPRESS', name: this.translationService.translate('checkout.express_delivery'), fee: 9.99, freeOver: null }
   ];
   
   currentStep = 1;
@@ -51,7 +52,8 @@ export class CheckoutComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
-    private router: Router
+    private router: Router,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {

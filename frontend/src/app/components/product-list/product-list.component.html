@@ -1,8 +1,11 @@
+<!-- Enhanced Product List Component -->
 <div class="section-header fade-in">
   <div class="row align-items-center mb-4">
     <div class="col-md-7">
-      <h2 class="mb-2 text-grocery-green"><i class="fas fa-shopping-basket me-2 text-grocery-green"></i>Fresh Groceries</h2>
-      <p class="text-muted">Discover our selection of premium quality groceries</p>
+      <h2 class="mb-2 text-grocery-green">
+        <i class="fas fa-shopping-basket me-2 text-grocery-green"></i>{{ translationService.translate('products.title') }}
+      </h2>
+      <p class="text-muted">{{ translationService.translate('products.subtitle') }}</p>
     </div>
     <div class="col-md-5">
       <div class="input-group">
@@ -12,17 +15,116 @@
         <input 
           type="text" 
           class="form-control border-start-0" 
-          placeholder="Search for fresh products..." 
+          [placeholder]="translationService.translate('products.search_placeholder')"
           [(ngModel)]="searchTerm"
-          (keyup.enter)="searchProducts()">
-        <button class="btn btn-primary" type="button" (click)="searchProducts()">
-          Search
+          (input)="onSearchInput($event)"
+          (keyup.enter)="performSearch(searchTerm)">
+        <button class="btn btn-primary" type="button" (click)="performSearch(searchTerm)">
+          {{ translationService.translate('products.search_button') }}
         </button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Advanced Filters Toggle -->
+<div class="advanced-filters-toggle mb-3 fade-in">
+      <button 
+      class="btn btn-outline-primary btn-sm" 
+      (click)="toggleAdvancedFilters()"
+      [class.active]="showAdvancedFilters">
+      <i class="fas fa-filter me-2"></i>
+      {{ showAdvancedFilters ? translationService.translate('products.hide_filters') : translationService.translate('products.show_filters') }}
+    </button>
+</div>
+
+<!-- Advanced Filters Panel -->
+<div class="advanced-filters-panel mb-4 fade-in" *ngIf="showAdvancedFilters">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Price Range Filter -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium">{{ translationService.translate('products.price_range') }}</label>
+          <div class="d-flex align-items-center gap-2">
+            <input 
+              type="number" 
+              class="form-control form-control-sm" 
+              placeholder="Min"
+              [(ngModel)]="filterOptions.priceRange.min"
+              (change)="onPriceRangeChange()">
+            <span class="text-muted">-</span>
+            <input 
+              type="number" 
+              class="form-control form-control-sm" 
+              placeholder="Max"
+              [(ngModel)]="filterOptions.priceRange.max"
+              (change)="onPriceRangeChange()">
+          </div>
+        </div>
+        
+        <!-- Sort Options -->
+        <div class="col-md-3">
+          <label class="form-label fw-medium">{{ translationService.translate('products.sort_by') }}</label>
+                      <select 
+              class="form-select form-select-sm" 
+              [(ngModel)]="filterOptions.sortBy"
+              (change)="onSortChange()">
+              <option value="name">{{ translationService.translate('products.sort_name') }}</option>
+              <option value="price">{{ translationService.translate('products.sort_price') }}</option>
+              <option value="popularity">{{ translationService.translate('products.sort_popularity') }}</option>
+              <option value="newest">{{ translationService.translate('products.sort_newest') }}</option>
+            </select>
+        </div>
+        
+        <!-- Sort Order -->
+        <div class="col-md-3">
+          <label class="form-label fw-medium">{{ translationService.translate('common.order') }}</label>
+                      <select 
+              class="form-select form-select-sm" 
+              [(ngModel)]="filterOptions.sortOrder"
+              (change)="onSortChange()">
+              <option value="asc">{{ translationService.translate('products.order_asc') }}</option>
+              <option value="desc">{{ translationService.translate('products.order_desc') }}</option>
+            </select>
+        </div>
+        
+        <!-- Stock Filter -->
+        <div class="col-md-6">
+          <div class="form-check">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="inStockOnly"
+              [(ngModel)]="filterOptions.inStockOnly"
+              (change)="applyAllFilters()">
+            <label class="form-check-label" for="inStockOnly">
+              {{ translationService.translate('products.in_stock_only') }}
+            </label>
+          </div>
+        </div>
+        
+        <!-- Multiple Categories -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium">{{ translationService.translate('products.categories') }}</label>
+          <div class="d-flex flex-wrap gap-1">
+            <button 
+              *ngFor="let category of categories"
+              type="button" 
+              class="btn btn-sm"
+              [class.btn-primary]="filterOptions.categories.includes(category)"
+              [class.btn-outline-primary]="!filterOptions.categories.includes(category)"
+              (click)="onCategoryToggle(category)">
+              {{ category }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category Filter -->
 <div class="category-filter mb-4 fade-in">
   <div class="d-flex flex-wrap gap-2">
     <button 
@@ -31,7 +133,7 @@
       [class.btn-primary]="selectedCategory === 'all'"
       [class.btn-outline-primary]="selectedCategory !== 'all'"
       (click)="filterByCategory('all')">
-      <i class="fas fa-th-large me-2"></i>All Categories
+      <i class="fas fa-th-large me-2"></i>{{ translationService.translate('products.all_categories') }}
     </button>
     <button 
       type="button" 
@@ -40,49 +142,63 @@
       [class.btn-outline-primary]="selectedCategory !== category"
       *ngFor="let category of categories" 
       (click)="filterByCategory(category)">
-      <i class="fas fa-tag me-2"></i>{{ category }}
+      <i class="fas fa-tag me-2"></i>{{ getTranslatedCategory(category) }}
     </button>
   </div>
 </div>
 
-<style>
-  .category-btn {
-    border-radius: 50px;
-    padding: 10px 18px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-  }
-  
-  .category-filter {
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
-</style>
+<!-- Recently Viewed Section -->
+<div class="recently-viewed mb-4 fade-in" *ngIf="recentlyViewed.length > 0">
+  <h5 class="mb-3 text-grocery-green">
+    <i class="fas fa-clock me-2"></i>{{ translationService.translate('products.recently_viewed') }}
+  </h5>
+  <div class="row g-2">
+    <div class="col-auto" *ngFor="let item of recentlyViewed">
+      <div class="recent-item-card" (click)="addToRecentlyViewed(item)">
+        <img [src]="item.imageUrl" [alt]="item.name" class="recent-item-image">
+        <div class="recent-item-overlay">
+          <span class="recent-item-name">{{ getTranslatedProductName(item) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<div class="row g-4" *ngIf="!loading; else loadingTemplate">
-  <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let item of filteredItems; let i = index">
+<!-- Products Grid -->
+<div class="row g-4" *ngIf="!loading; else skeletonTemplate">
+  <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let item of getPaginatedItems(); let i = index">
     <div class="card h-100 fade-in product-card" [style.animation-delay]="(i * 0.05) + 's'">
       <div class="product-image-container">
-        <img [src]="item.imageUrl" [alt]="item.name" class="card-img-top product-image">
-        <span class="category-badge">{{ item.category }}</span>
+        <img [src]="item.imageUrl" [alt]="item.name" class="card-img-top product-image" loading="lazy">
+                    <span class="category-badge">{{ getTranslatedCategory(item.category) }}</span>
+        
+        <!-- Wishlist Button -->
+        <button 
+          class="wishlist-btn"
+          (click)="toggleWishlist(item.id)"
+          [class.active]="isInWishlist(item.id)">
+          <i class="fas" [class.fa-heart]="isInWishlist(item.id)" [class.fa-heart-o]="!isInWishlist(item.id)"></i>
+        </button>
+        
+        <!-- Quick View Button -->
+        <button class="quick-view-btn" (click)="openProductDetail(item)">
+          <i class="fas fa-eye"></i>
+        </button>
       </div>
+      
       <div class="card-body d-flex flex-column">
-        <h5 class="card-title fw-bold mb-1">{{ item.name }}</h5>
-        <p class="card-text text-muted small mb-3">{{ item.description }}</p>
+                    <h5 class="card-title fw-bold mb-1">{{ getTranslatedProductName(item) }}</h5>
+            <p class="card-text text-muted small mb-3">{{ getTranslatedProductDescription(item) }}</p>
+        
         <div class="mt-auto">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="h5 text-success fw-bold mb-0">${{ item.price.toFixed(2) }}</span>
-            <span class="badge" [ngClass]="{
-              'badge-success': item.availableQuantity > 10,
-              'badge-warning': item.availableQuantity <= 10 && item.availableQuantity > 0,
-              'badge-danger': item.availableQuantity === 0
-            }">
+            <span class="badge" [ngClass]="getStockStatus(item).class">
               <i class="fas fa-cubes me-1"></i>
-              {{ item.availableQuantity > 0 ? item.availableQuantity + ' in stock' : 'Out of stock' }}
+              {{ getStockStatus(item).status }}
             </span>
           </div>
+          
           <div class="d-flex align-items-center">
             <div class="quantity-controls me-2">
               <button 
@@ -104,7 +220,7 @@
               (click)="addToCart(item)"
               [disabled]="item.availableQuantity === 0">
               <i class="fas fa-cart-plus me-1"></i>
-              Add
+              {{ translationService.translate('products.add_to_cart') }}
             </button>
           </div>
         </div>
@@ -113,7 +229,65 @@
   </div>
 </div>
 
+<!-- Load More Button -->
+<div class="text-center mt-4" *ngIf="!loading && currentPage < totalPages">
+  <button 
+    class="btn btn-outline-primary" 
+    (click)="loadMoreItems()">
+    <i class="fas fa-spinner me-2" *ngIf="loading"></i>
+    {{ translationService.translate('products.load_more') }}
+  </button>
+</div>
+
+<!-- Skeleton Loading Template -->
+<ng-template #skeletonTemplate>
+  <app-product-skeleton></app-product-skeleton>
+</ng-template>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!loading && filteredItems.length === 0">
+  <i class="fas fa-search"></i>
+  <h4>{{ translationService.translate('products.no_products') }}</h4>
+  <p>{{ translationService.translate('products.no_products_message') }}</p>
+  <button class="btn btn-primary" (click)="resetFilters()">
+    <i class="fas fa-redo me-2"></i>{{ translationService.translate('products.reset_filters') }}
+  </button>
+  <div class="empty-state-suggestions mt-4">
+    <p class="small text-muted">{{ translationService.translate('products.suggestions') }}</p>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Fruits')">{{ getTranslatedCategory('Fruits') }}</button>
+      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Vegetables')">{{ getTranslatedCategory('Vegetables') }}</button>
+      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Dairy')">{{ getTranslatedCategory('Dairy') }}</button>
+      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Seafood')">{{ getTranslatedCategory('Seafood') }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Styles -->
 <style>
+  .category-btn {
+    border-radius: 50px;
+    padding: 10px 18px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .category-filter {
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .advanced-filters-toggle .btn.active {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .advanced-filters-panel {
+    transition: all 0.3s ease;
+  }
+  
   .product-image-container {
     position: relative;
     overflow: hidden;
@@ -121,6 +295,12 @@
   
   .product-card {
     border: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   }
   
   .category-badge {
@@ -137,58 +317,163 @@
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255,255,255,0.8);
   }
+  
+  .wishlist-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+  
+  .wishlist-btn:hover {
+    background: rgba(255,255,255,1);
+    color: var(--danger);
+    transform: scale(1.1);
+  }
+  
+  .wishlist-btn.active {
+    color: var(--danger);
+  }
+  
+  .quick-view-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+  }
+  
+  .product-card:hover .quick-view-btn {
+    opacity: 1;
+  }
+  
+  .quick-view-btn:hover {
+    background: rgba(255,255,255,1);
+    color: var(--primary);
+    transform: scale(1.1);
+  }
+  
+  .recently-viewed {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  
+  .recent-item-card {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .recent-item-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .recent-item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .recent-item-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+    padding: 8px 4px;
+    font-size: 0.7rem;
+    text-align: center;
+  }
+  
+  .recent-item-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .loading-progress {
+    width: 200px;
+    height: 4px;
+    background-color: var(--gray-200);
+    border-radius: 4px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+  
+  .loading-bar {
+    height: 100%;
+    width: 30%;
+    background-color: var(--primary);
+    border-radius: 4px;
+    animation: loading 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-600);
+  }
+  
+  .empty-state i {
+    font-size: 4rem;
+    color: var(--gray-400);
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .empty-state h4 {
+    color: var(--gray-700);
+    margin-bottom: 10px;
+  }
+  
+  .empty-state p {
+    color: var(--gray-600);
+    margin-bottom: 20px;
+  }
+  
+  .empty-state .btn {
+    margin-bottom: 20px;
+  }
 </style>
 
-<ng-template #loadingTemplate>
-  <div class="loading-spinner">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="mt-3 text-muted">Loading fresh groceries...</p>
-    <div class="loading-progress">
-      <div class="loading-bar"></div>
-    </div>
-  </div>
-  
-  <style>
-    .loading-progress {
-      width: 200px;
-      height: 4px;
-      background-color: var(--gray-200);
-      border-radius: 4px;
-      margin-top: 15px;
-      overflow: hidden;
-    }
-    
-    .loading-bar {
-      height: 100%;
-      width: 30%;
-      background-color: var(--primary);
-      border-radius: 4px;
-      animation: loading 1.5s infinite ease-in-out;
-    }
-    
-    @keyframes loading {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(400%); }
-    }
-  </style>
-</ng-template>
-
-<div class="empty-state" *ngIf="!loading && filteredItems.length === 0">
-  <i class="fas fa-search"></i>
-  <h4>No products found</h4>
-  <p>We couldn't find any products matching your criteria</p>
-  <button class="btn btn-primary" (click)="resetFilters()">
-    <i class="fas fa-redo me-2"></i>Reset Filters
-  </button>
-  <div class="empty-state-suggestions mt-4">
-    <p class="small text-muted">You might be interested in:</p>
-    <div class="d-flex flex-wrap justify-content-center gap-2">
-      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Fruits')">Fruits</button>
-      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Vegetables')">Vegetables</button>
-      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Dairy')">Dairy</button>
-      <button class="btn btn-sm btn-outline-primary" (click)="filterByCategory('Seafood')">Seafood</button>
-    </div>
-  </div>
-</div>
+<!-- Product Detail Modal -->
+<app-product-detail
+  [product]="selectedProduct"
+  [isVisible]="showProductModal"
+  [isInWishlist]="selectedProduct ? isInWishlist(selectedProduct.id) : false"
+  (closeModal)="closeProductDetail()"
+  (addToCartEvent)="onAddToCartFromModal($event)"
+  (toggleWishlistEvent)="onToggleWishlistFromModal($event)">
+</app-product-detail>

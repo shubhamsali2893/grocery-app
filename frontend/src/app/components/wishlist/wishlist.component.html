@@ -1,0 +1,127 @@
+<div class="wishlist-container">
+  <!-- Header -->
+  <div class="section-header fade-in">
+    <div class="row align-items-center mb-4">
+      <div class="col-md-8">
+        <h2 class="mb-2 text-grocery-green">
+          <i class="fas fa-heart me-2 text-danger"></i>{{ translationService.translate('wishlist.title') }}
+        </h2>
+        <p class="text-muted">{{ translationService.translate('wishlist.subtitle') }}</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <button 
+          class="btn btn-outline-danger" 
+          (click)="clearWishlist()"
+          [disabled]="wishlistItems.length === 0">
+          <i class="fas fa-trash me-2"></i>{{ translationService.translate('wishlist.clear_all') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-spinner text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading your wishlist...</p>
+  </div>
+
+  <!-- Wishlist Items -->
+  <div *ngIf="!loading && wishlistItems.length > 0" class="wishlist-items">
+    <div class="row g-4">
+      <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let item of wishlistItems; let i = index">
+        <div class="card h-100 fade-in wishlist-card" [style.animation-delay]="(i * 0.05) + 's'">
+          <div class="product-image-container">
+            <img [src]="item.imageUrl" [alt]="item.name" class="card-img-top product-image" loading="lazy">
+            <span class="category-badge">{{ getTranslatedCategory(item.category) }}</span>
+            
+            <!-- Remove from Wishlist Button -->
+            <button 
+              class="remove-wishlist-btn"
+              (click)="removeFromWishlist(item.id)"
+              title="Remove from wishlist">
+              <i class="fas fa-heart-broken"></i>
+            </button>
+          </div>
+          
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold mb-1">{{ getTranslatedProductName(item) }}</h5>
+            <p class="card-text text-muted small mb-3">{{ getTranslatedProductDescription(item) }}</p>
+            
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="h5 text-success fw-bold mb-0">${{ item.price.toFixed(2) }}</span>
+                <span class="badge" [ngClass]="getStockStatus(item).class">
+                  <i class="fas fa-cubes me-1"></i>
+                  {{ getStockStatus(item).status }}
+                </span>
+              </div>
+              
+              <div class="d-flex align-items-center">
+                <div class="quantity-controls me-2">
+                  <button 
+                    class="btn btn-sm" 
+                    (click)="decreaseQuantity(item.id)"
+                    [disabled]="getQuantity(item.id) <= 1">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span class="mx-2 fw-medium">{{ getQuantity(item.id) }}</span>
+                  <button 
+                    class="btn btn-sm" 
+                    (click)="increaseQuantity(item.id)"
+                    [disabled]="getQuantity(item.id) >= item.availableQuantity">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <button 
+                  class="btn btn-primary flex-grow-1" 
+                  (click)="addToCart(item)"
+                  [disabled]="item.availableQuantity === 0">
+                  <i class="fas fa-cart-plus me-1"></i>
+                  {{ translationService.translate('products.add_to_cart') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && wishlistItems.length === 0" class="empty-wishlist">
+    <div class="text-center">
+      <i class="fas fa-heart-broken empty-icon"></i>
+      <h4>{{ translationService.translate('wishlist.empty') }}</h4>
+      <p class="text-muted">{{ translationService.translate('wishlist.empty_message') }}</p>
+      <button class="btn btn-primary" routerLink="/products">
+        <i class="fas fa-shopping-basket me-2"></i>{{ translationService.translate('wishlist.browse_products') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Wishlist Summary -->
+  <div *ngIf="!loading && wishlistItems.length > 0" class="wishlist-summary mt-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h6 class="mb-0">
+              <i class="fas fa-heart text-danger me-2"></i>
+              {{ getWishlistCount() }} {{ translationService.translate('wishlist.items_count') }}
+            </h6>
+          </div>
+          <div class="col-md-6 text-end">
+            <button class="btn btn-outline-primary me-2" routerLink="/products">
+              <i class="fas fa-plus me-2"></i>{{ translationService.translate('wishlist.add_more') }}
+            </button>
+            <button class="btn btn-primary" routerLink="/cart">
+              <i class="fas fa-shopping-cart me-2"></i>{{ translationService.translate('wishlist.view_cart') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

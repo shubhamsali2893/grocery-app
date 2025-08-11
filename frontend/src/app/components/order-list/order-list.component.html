@@ -1,10 +1,10 @@
 <div class="row mb-4">
   <div class="col-md-8">
-    <h2><i class="fas fa-receipt me-2"></i>Order History</h2>
-    <p class="text-muted" *ngIf="!isAdmin">Track your orders and view order details</p>
+    <h2><i class="fas fa-receipt me-2"></i>{{ translationService.translate('orders.title') }}</h2>
+    <p class="text-muted" *ngIf="!isAdmin">{{ translationService.translate('orders.track_orders') }}</p>
     <p class="text-muted" *ngIf="isAdmin">
-      <span class="badge bg-primary me-2">Admin</span>
-      Manage all customer orders
+      <span class="badge bg-primary me-2">{{ translationService.translate('auth.admin') }}</span>
+      {{ translationService.translate('orders.manage_orders') }}
     </p>
   </div>
   <div class="col-md-4" *ngIf="isAdmin">
@@ -12,7 +12,7 @@
       <input 
         type="text" 
         class="form-control" 
-        placeholder="Search by customer name..." 
+        [placeholder]="translationService.translate('orders.search_placeholder')" 
         [(ngModel)]="searchCustomer"
         (keyup.enter)="searchOrders()">
       <button class="btn btn-outline-primary" type="button" (click)="searchOrders()">
@@ -24,11 +24,11 @@
 
 <div *ngIf="!loading && orders.length === 0" class="empty-state">
   <i class="fas fa-receipt"></i>
-  <h4>No orders found</h4>
-  <p *ngIf="!isAdmin">You haven't placed any orders yet.</p>
-  <p *ngIf="isAdmin">No orders have been placed in the system.</p>
+  <h4>{{ translationService.translate('orders.no_orders') }}</h4>
+  <p *ngIf="!isAdmin">{{ translationService.translate('orders.no_orders_user') }}</p>
+  <p *ngIf="isAdmin">{{ translationService.translate('orders.no_orders_admin') }}</p>
   <a routerLink="/products" class="btn btn-primary">
-    <i class="fas fa-store me-2"></i>Start Shopping
+    <i class="fas fa-store me-2"></i>{{ translationService.translate('orders.start_shopping') }}
   </a>
 </div>
 
