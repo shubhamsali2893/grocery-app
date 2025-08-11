@@ -67,6 +67,7 @@ export class TranslationService {
         'low_stock': 'Low stock',
         'out_of_stock': 'Out of stock'
       },
+      'products.available': 'Available',
 
       // Cart
       'cart.title': 'Shopping Cart',
@@ -306,6 +307,7 @@ export class TranslationService {
         'low_stock': '库存不足',
         'out_of_stock': '缺货'
       },
+      'products.available': '可用数量',
 
       // Cart
       'cart.title': '购物车',

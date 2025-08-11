@@ -175,6 +175,10 @@ grocery-app/
    - Backend API: http://localhost:8080
    - H2 Database Console: http://localhost:8080/h2-console
 
+5. **User Accounts**
+   - Regular User: Sign up with any email and password
+   - Admin User: Sign up with admin role using access code: `1122`
+
 ## 🔌 API Endpoints
 
 ### Authentication

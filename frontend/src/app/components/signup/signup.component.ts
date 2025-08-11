@@ -18,8 +18,12 @@ export class SignupComponent {
   email = '';
   password = '';
   role = 'USER';
+  accessCode = '';
   error = '';
   success = '';
+  
+  // Admin access code
+  private readonly ADMIN_ACCESS_CODE = '1122';
 
   constructor(
     private http: HttpClient, 
@@ -29,6 +33,12 @@ export class SignupComponent {
   ) {}
 
   signup() {
+    // Validate admin access code if role is ADMIN
+    if (this.role === 'ADMIN' && this.accessCode !== this.ADMIN_ACCESS_CODE) {
+      this.error = 'Invalid admin access code. Please try again.';
+      return;
+    }
+    
     this.http.post<any>('http://localhost:8080/api/auth/signup', {
       username: this.username,
       email: this.email,

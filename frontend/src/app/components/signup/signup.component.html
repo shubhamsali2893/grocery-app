@@ -67,6 +67,24 @@
                 <option value="ADMIN">{{ translationService.translate('auth.admin') }}</option>
               </select>
             </div>
+            
+            <!-- Admin Access Code field - only shown when Admin role is selected -->
+            <div class="mb-3" *ngIf="role === 'ADMIN'">
+              <label class="form-label">Admin Access Code *</label>
+              <input 
+                [(ngModel)]="accessCode" 
+                name="accessCode" 
+                type="password" 
+                class="form-control" 
+                required 
+                #accessCodeInput="ngModel"
+                [ngClass]="{'is-invalid': accessCodeInput.invalid && (accessCodeInput.dirty || accessCodeInput.touched)}"
+              />
+              <div class="invalid-feedback" *ngIf="accessCodeInput.invalid && (accessCodeInput.dirty || accessCodeInput.touched)">
+                <div *ngIf="accessCodeInput.errors?.['required']">Access code is required for admin signup.</div>
+              </div>
+              <small class="form-text text-muted">Enter the admin access code to register as an administrator.</small>
+            </div>
             <div *ngIf="error" class="alert alert-danger py-1 px-2 mb-3">{{ error }}</div>
             <div *ngIf="success" class="alert alert-success py-1 px-2 mb-3">{{ success }}</div>
             <button type="submit" class="btn btn-primary w-100" [disabled]="signupForm.invalid">{{ translationService.translate('auth.sign_up') }}</button>

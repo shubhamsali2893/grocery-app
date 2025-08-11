@@ -61,3 +61,14 @@
 .tracking-step.completed .tracking-content h6 {
   color: #28a745;
 }
+
+/* Animation for the auto-progression notification */
+.fade-out {
+  animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}

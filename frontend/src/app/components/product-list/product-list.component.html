@@ -177,7 +177,7 @@
           class="wishlist-btn"
           (click)="toggleWishlist(item.id)"
           [class.active]="isInWishlist(item.id)">
-          <i class="fas" [class.fa-heart]="isInWishlist(item.id)" [class.fa-heart-o]="!isInWishlist(item.id)"></i>
+          <i class="fa" [ngClass]="isInWishlist(item.id) ? 'fas fa-heart' : 'far fa-heart'"></i>
         </button>
         
         <!-- Quick View Button -->
@@ -193,10 +193,13 @@
         <div class="mt-auto">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="h5 text-success fw-bold mb-0">${{ item.price.toFixed(2) }}</span>
-            <span class="badge" [ngClass]="getStockStatus(item).class">
-              <i class="fas fa-cubes me-1"></i>
-              {{ getStockStatus(item).status }}
-            </span>
+            <div class="stock-indicator">
+              <span class="badge" [ngClass]="getStockStatus(item).class">
+                <i class="fas fa-cubes me-1"></i>
+                {{ getStockStatus(item).status }}
+              </span>
+              <span class="stock-count mt-1">{{ translationService.translate('products.available') }}: {{ item.availableQuantity }}</span>
+            </div>
           </div>
           
           <div class="d-flex align-items-center">
@@ -303,6 +306,18 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   }
   
+  .stock-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .stock-count {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  
   .category-badge {
     position: absolute;
     top: 12px;
@@ -343,6 +358,7 @@
   
   .wishlist-btn.active {
     color: var(--danger);
+    background: rgba(255,255,255,1);
   }
   
   .quick-view-btn {

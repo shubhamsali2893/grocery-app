@@ -138,6 +138,9 @@
     <div class="card" *ngIf="isAdmin() && order.status !== OrderStatus.DELIVERED && order.status !== OrderStatus.CANCELLED">
       <div class="card-header">
         <h5 class="mb-0">Update Status</h5>
+        <div *ngIf="progressionMessage" class="alert alert-info py-1 px-2 mt-2 mb-0 fade-out">
+          <small><i class="fas fa-clock me-1"></i> {{ progressionMessage }}</small>
+        </div>
       </div>
       <div class="card-body">
         <div class="d-grid gap-2">

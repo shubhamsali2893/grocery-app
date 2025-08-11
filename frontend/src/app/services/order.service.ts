@@ -28,7 +28,9 @@ export class OrderService {
       return this.http.get<Order[]>(this.apiUrl);
     } else if (this.authService.isLoggedIn()) {
       const user = this.authService.getUser();
-      return this.getOrdersByCustomer(user.username);
+      // Use the user's full name from the stored user object instead of username
+      // This ensures we match against the customerName field in the orders
+      return this.getOrdersByCustomer(user.name || user.username);
     }
     return this.http.get<Order[]>(this.apiUrl);
   }
